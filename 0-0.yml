@@ -1,7 +1,44 @@
 ---
-- name: Fix yum update
-  hosts: all
+- hosts: all
   become: yes
-   
+
   tasks:
-  - 
+  - name: Find all files in /etc/yum.repos.d/
+    find:
+      paths: /etc/yum.repos.d/
+      patterns: '*.repo'
+      recurse: yes
+    register: files_to_change
+
+  - name: Comment mirrorlist
+    lineinfile:
+      dest: "{{ item.path }}"
+      regexp: '(^mirrorlist=.*)'
+      line: '#\1'
+      backrefs: yes
+    loop_control:
+      label: "{{ item.path }}"
+    with_items: "{{ files_to_change.files }}"
+
+  - name: Uncomment base url
+    lineinfile:
+      dest: "{{ item.path }}"
+      regexp: '^#(baseurl=.*)'
+      line: '\1'
+      backrefs: yes
+    loop_control:
+      label: "{{ item.path }}"
+    with_items: "{{ files_to_change.files }}"
+
+  - name: Replace url
+    replace:
+      path: "{{ item.path }}"
+      regexp: 'baseurl=http://mirror.centos.org'
+      replace: 'baseurl=http://vault.centos.org'
+    loop_control:
+      label: "{{ item.path }}"
+    with_items: "{{ files_to_change.files }}"
+
+  - name: Update repo
+    command: 'yum update -y'
+
