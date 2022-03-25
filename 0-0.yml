@@ -1,0 +1,7 @@
+---
+- name: Fix yum update
+  hosts: all
+  become: yes
+   
+  tasks:
+  - 
