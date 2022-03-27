@@ -1,0 +1,29 @@
+---
+- name: Remove httpd and close ports
+  hosts: all
+  become: yes
+  gather_facts: no
+
+  tasks:
+  - name: "Remove httpd service"
+    yum:
+      name: httpd
+      state: absent
+      update_cache: yes
+
+  - name: "Remove html file"
+    file:
+      path: /var/www/html/index.html
+      state: absent
+
+  - name: "Close http service"
+    firewalld:
+      service: http
+      permanent: yes
+      state: disabled
+
+  - name: "Restart firewalld service"
+    service: 
+      name: firewalld
+      state: restarted 
+...

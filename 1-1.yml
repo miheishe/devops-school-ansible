@@ -1,2 +1,42 @@
 ---
-- name: httpd install and check
+- name: Install and start httpd
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  tasks:
+  - name: "Install httpd latest version"
+    yum:
+      name: httpd
+      state: latest
+      update_cache: yes
+
+  - name: "Run and enable httpd service"
+    service: 
+      name: httpd
+      state: started 
+      enabled: yes
+
+  - name: "Populate services facts"
+    service_facts:
+
+  - name: "Is httpd running?"
+    debug:
+      msg: "{{ansible_facts.services['httpd.service'].state}}"
+
+  - name: "Add welcome html file"
+    copy:
+      content: "Welcome to my web server"
+      dest: /var/www/html/index.html
+
+  - name: "Open http service"
+    firewalld:
+      service: http
+      permanent: yes
+      state: enabled
+      
+  - name: "Restart firewalld service"
+    service: 
+      name: firewalld
+      state: restarted 
+...

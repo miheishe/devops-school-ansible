@@ -1,0 +1,29 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: no
+
+  tasks:
+  - name: "Adding net.ifnames=0"
+    lineinfile:
+      state: present
+      dest: /etc/default/grub
+      backrefs: yes
+      regexp: '^(GRUB_CMDLINE_LINUX=(?!.* net\.ifnames)\"[^\"]+)(\".*)'
+      line: '\1 net.ifnames=0\2'
+      
+  - name: "Adding biosdevname=0"
+    lineinfile:
+      state: present
+      dest: /etc/default/grub
+      backrefs: yes
+      regexp: '^(GRUB_CMDLINE_LINUX=(?!.* biosdevname)\"[^\"]+)(\".*)'
+      line: '\1 biosdevname=0\2'
+
+  - name: "Updating grub"
+    command: 'grub2-mkconfig -o /etc/default/grub'
+    register: result
+    
+  - debug:
+      var: result
+      
