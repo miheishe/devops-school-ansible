@@ -20,10 +20,7 @@
       regexp: '^(GRUB_CMDLINE_LINUX=(?!.* biosdevname)\"[^\"]+)(\".*)'
       line: '\1 biosdevname=0\2'
 
-  - name: "Updating grub"
-    command: 'grub2-mkconfig -o /etc/default/grub'
-    register: result
-    
-  - debug:
-      var: result
+  - name: "Updating grub config"
+    command: 'grub2-mkconfig -o /boot/grub2/grub.cfg'
+...
       
