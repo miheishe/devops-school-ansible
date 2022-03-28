@@ -1,0 +1,32 @@
+---
+- name: Create three users with home dir and passwords
+  hosts: all
+  become: yes
+  gather_facts: no
+
+  vars_files:
+    - passwords.yml
+
+  vars:
+    users:
+      - name: Alice
+        password: "{{ pass_alice }}"
+      - name: Bob
+        password: "{{ pass_bob }}"
+      - name: Carol
+        password: "{{ pass_carol }}"
+
+  tasks:
+    - debug:
+        msg: "{{ item.name }} {{ item.password }}"
+      with_items: "{{ users }}"
+
+    - name: "Creating users"
+      user:
+        name: "{{ item.name }}"
+        password: "{{ item.password | password_hash('sha512') }}"
+        state: present
+        create_home: yes
+        update_password: on_create
+      with_items: "{{ users }}"
+...
