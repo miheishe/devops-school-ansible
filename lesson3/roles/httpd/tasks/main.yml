@@ -1,0 +1,37 @@
+---
+- name: install {{ webserver }}
+  package:
+    name: "{{ webserver }}"
+    state: present
+
+- name: run {{ webserver }}
+  service:
+    name: "{{ webserver }}"
+    enabled: true
+    state: started
+  notify: 
+    - httpd state
+
+- name: create index.html
+  template:
+    src: index.j2
+    dest: "{{ index_path }}"
+
+- name: install {{ firewall }}
+  package: 
+    name: "{{ firewall }}"
+    state: present
+
+- name: run {{ firewall }} service
+  service:
+    name: "{{ firewall }}"
+    state: started
+    enabled: true
+
+- name: apply firewall settings
+  firewalld:
+    service: "{{ protocol }}"
+    state: enabled
+    permanent: yes
+  notify:
+    - Restart firewalld service

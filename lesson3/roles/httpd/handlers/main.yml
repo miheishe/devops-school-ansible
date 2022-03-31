@@ -1,0 +1,10 @@
+---
+  - name: "httpd sate"
+    service_facts:
+  - debug:
+      msg: "{{ansible_facts.services['httpd.service'].state}}"
+
+  - name: "Restart firewalld service"
+    service: 
+      name: firewalld
+      state: restarted

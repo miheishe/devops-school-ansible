@@ -1,0 +1,8 @@
+---
+- name: httpd playbook
+  hosts: all
+  become: yes
+  
+  roles:
+    - role: httpd
+      when: ansible_distribution == "CentOS"
