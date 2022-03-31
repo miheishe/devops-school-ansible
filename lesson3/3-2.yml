@@ -1,0 +1,8 @@
+---
+- name: ftp playbook
+  hosts: all
+  become: yes
+  
+  roles:
+    - role: ftp
+      when: ansible_distribution == "CentOS"

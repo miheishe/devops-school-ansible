@@ -1,0 +1,10 @@
+---
+- name: Restart ftp
+  service:
+    name: "{{ ftpserver }}"
+    state: restarted
+
+- name: Restart firewall
+  service:
+    name: "{{ firewall }}"
+    state: restarted

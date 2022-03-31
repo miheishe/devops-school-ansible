@@ -1,0 +1,60 @@
+---
+- name: Install ftp server
+  package: 
+    name: "{{ ftpserver }}"
+    state: present
+
+- name: Run ftp server
+  service:
+    name: "{{ ftpserver }}"
+    enabled: true
+    state: started
+
+- name: Install firewall
+  package:
+    name: "{{ firewall }}"
+    state: present
+
+- name: Run firewall
+  service:
+    name: "{{ firewall }}"
+    state: started
+
+- name: Check SE python utils
+  package:
+    name: policycoreutils-python-utils
+    state: present
+
+- name: Create FTP pub directory
+  file:
+    state: directory
+    path: "{{ ftp_pub_dir }}"
+    mode: '755'
+    setype: public_content_rw_t
+
+- name: Create FTP upload directory
+  file:
+    state: directory
+    path: "{{ ftp_upload_dir }}"
+    mode: "777"
+    setype: public_content_rw_t
+
+- name: Set ftp config
+  template:
+    src: vsftpd.j2
+    dest: "{{ ftp_config_file }}"
+
+- name: Set SELinux boolean
+  seboolean:
+    name: "{{ selinux_ftpd_anon_write }}"
+    state: yes
+    persistent: yes
+
+- name: Apply firewall settings
+  firewalld:
+    service: "{{ protocol }}"
+    state: enabled
+    permanent: yes
+  notify:
+  - Restart ftp
+  - Restart firewall

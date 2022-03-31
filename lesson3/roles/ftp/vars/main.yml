@@ -1,0 +1,8 @@
+---
+  ftpserver: vsftpd
+  firewall: firewalld
+  protocol: ftp
+  ftp_config_file: /etc/vsftpd/vsftpd.conf
+  ftp_pub_dir: /var/ftp/pub
+  ftp_upload_dir: /var/ftp/pub/upload
+  selinux_ftpd_anon_write: ftpd_anon_write
